@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block content %}
+{% load bootstrap3 %}
+		<div class="row">
+		<div class="col-md-4">
+			<h1 id='wh'>Hi @{{user.username|title}}</h1>
+		</div>
+		<div class="col-md-8">
+			<h3 id='wh'>Are you sure you want to delete the below note ?</h3>
+			<div class="container note-wrap note-white">
+					<h1>{{notes.title}}</h1>
+					<h3>{{notes.text|safe}}</h3>
+					<h5>Created by: @{{notes.user.username}}</h5>
+					<h5>{{notes.created}}</h5>
+			</div>
+			<form method="post">
+				{% csrf_token %}
+				<input type="submit" value="Delete" class="btn btn-warning">
+			</form>
+		</div>
+	</div>
+{% endblock %}
