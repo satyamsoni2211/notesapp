@@ -1,13 +1,8 @@
-from datetime import datetime
 from django.utils import timezone
 from accounts.models import JWT_token
-from django.http import HttpResponse, HttpResponseRedirect
-from django.conf import settings
 from jwt import DecodeError, ExpiredSignatureError
-from rest_framework.response import Response
 from rest_framework import status
 from rest_framework_jwt.utils import jwt_decode_handler, jwt_get_username_from_payload_handler
-from django.contrib.auth.models import User
 from django.utils.deprecation import MiddlewareMixin
 from rest_framework_jwt.settings import api_settings
 from django.http import JsonResponse
@@ -16,7 +11,6 @@ from django.contrib.auth import authenticate
 '''
 This middleware validates the JWT Token passed in the cookie of the 
 request received from the react front end.
-
 '''
 
 class NotesAppMiddlewares(MiddlewareMixin):

@@ -1,7 +1,7 @@
 from rest_framework import generics
 from rest_framework.decorators import api_view, renderer_classes
-from .serializers import NotesSerializer
-from notes.models import Notes
+from .serializers import NotesSerializer, UserSerializer
+from notes.models import Notes, SharedNotes
 from django.contrib.auth import get_user_model
 from rest_framework import mixins
 # from django.views.decorators.csrf import csrf_exempt
@@ -13,9 +13,10 @@ from rest_framework_jwt.views import ObtainJSONWebToken
 # from rest_framework.authtoken.models import Token
 from rest_framework_jwt.settings import api_settings
 from accounts.models import JWT_token
-
-
-User = get_user_model()
+from rest_framework import serializers
+from django.contrib.auth.models import User
+from django.http import JsonResponse
+from rest_framework import status
 
 
 class CustomAuthToken(ObtainJSONWebToken):
@@ -26,7 +27,6 @@ class CustomAuthToken(ObtainJSONWebToken):
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data['user']
 
-
         jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
         jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
 
@@ -34,7 +34,7 @@ class CustomAuthToken(ObtainJSONWebToken):
         token = jwt_encode_handler(payload)
         print(request.path)
 
-        create_token = JWT_token.objects.create(token=token,user=user)
+        create_token = JWT_token.objects.create(token=token, user=user)
         create_token.save()
         # request.session['token'] = token
         resp = Response({
@@ -55,20 +55,6 @@ class NotesListView(generics.ListAPIView):  # ,mixins.CreateModelMixin
         qs = Notes.objects.filter(
             user__username__iexact=self.request.user.username)
         return qs
-    # def post(self, request, *args, **kwargs):
-    #     return self.create(request, *args, **kwargs)
-
-    # def perform_create(self, serializer):
-    #     serializer.save(user=self.request.user)
-
-# class UpdateNotes(generics.UpdateAPIView,mixins.RetrieveModelMixin):
-#     serializer_class = NotesSerializer
-#     model = Notes
-
-#     def list(self, request):
-#         queryset = Notes.objects.get(pk=self.kwargs.get(pk))
-#         serializer = NotesSerializer(queryset)
-#         return response(serializer.data)
 
 
 @api_view(['GET', 'POST'])
@@ -96,6 +82,7 @@ def UpdateViewNotes(request, pk=None):
 def CreateNote(request):
     if request.method == 'POST':
         user = request.user
+        print(request.body)
         title = request.data.get('title')
         text = request.data.get('text')
         note = Notes.objects.create(title=title, user=user, text=text)
@@ -103,11 +90,35 @@ def CreateNote(request):
         serializer = NotesSerializer(note)
         return Response(serializer.data)
 
+
 @api_view(['POST'])
 @renderer_classes((JSONRenderer,))
-def DeleteNote(request,pk=None):
+def DeleteNote(request, pk=None):
     if request.method == 'POST':
         user = request.user
         note = Notes.objects.get(pk=pk)
         note.delete()
-        return Response({'detail':'deletedNote'})
+        return Response({'detail': 'deletedNote'})
+
+
+@api_view(['GET', 'POST'])
+@renderer_classes((JSONRenderer,))
+def ShareNotes(request):
+    if request.method == 'GET':
+        notes = NotesSerializer(Notes.objects.filter(
+            user__username__iexact=request.user.username), many=True)
+        user = UserSerializer(User.objects.exclude(
+            username__iexact=request.user.username), many=True)
+        print(notes, user)
+        return JsonResponse({'notes': notes.data, 'users': user.data})
+    if request.method == 'POST':
+        noteid = request.data.get('id')
+        username = request.data.get('username')[0]
+        note = SharedNotes.objects.get(note__id=noteid,user__username=username)
+        if note:
+            return Response({'details': 'Note already Shared'},status=status.HTTP_409_CONFLICT)
+        print(noteid,username)
+        shareNote = SharedNotes.objects.create(note=Notes.objects.get(id=noteid),
+                                               user=User.objects.get(username=username), shared_by=request.user.username)
+        shareNote.save()
+        return Response({'details': 'Note Shared Successfully'})

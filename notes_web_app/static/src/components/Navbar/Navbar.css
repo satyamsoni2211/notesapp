@@ -1,27 +1,8 @@
-/* .navbar-nav span[role=button] {
+.navbar-nav span[role=button] {
     padding: 15px;
     display: inline-block;
     line-height: 20px;
-  } */
-ul {
-    list-style-type: none;
-    display: inline;
-}
-li {
-    display: inline-block;
-    padding: 15px 30px;
-    border-right: 2px;
-    text-decoration: none;
-    color: #777;
-}
-li:focus{
-    background-color: grey;
-    color: white;
-}
-li:hover {
-    background-color: grey;
-    color: white;
-}
+  }
 a {
-    color : #777;
+    text-decoration: none;
 }

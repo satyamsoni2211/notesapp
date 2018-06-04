@@ -10,6 +10,7 @@ import isAuthenticated from '../../components/Utils/isAuthenticated';
 import AuthRoute from '../../components/Routers/AuthRoute';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import SharedNotes from '../../components/ShareNotes/ShareNotes';
 
 class App extends Component {
   state = {
@@ -37,6 +38,7 @@ class App extends Component {
           <AuthRoute path='/' exact={true} component={Notes} token={window.sessionStorage.getItem('token')}/>        
           <AuthRoute path='/view_notes' component={Notes} token={window.sessionStorage.getItem('token')}/>
           <AuthRoute path='/create_notes' component={CreateNote} token={this.state.authToken} logout={this.logoutHandle}/>
+          <AuthRoute path='/share_notes' component={SharedNotes}/>
           <Route path='/login' component={Login} tokenHandler={this.tokenHandle}/>
         </Switch>
       </Aux>
