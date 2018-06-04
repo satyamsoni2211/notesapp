@@ -17,12 +17,15 @@ const logoutHandle = (p) => {
 const navbar = (props) => {
     return (
         <Aux>
-            <Navbar>
+            <Navbar collapseOnSelect>
                 <Navbar.Header>
                     <Navbar.Brand>
                         <Link to='/'><img src={Logo} alt='Brand' /></Link>
                     </Navbar.Brand>
+                    <Navbar.Toggle/>
                 </Navbar.Header>
+                
+                <Navbar.Collapse>
                 <Nav pullRight>
                     {window.sessionStorage.getItem('token') &&
                         <Aux>
@@ -36,10 +39,14 @@ const navbar = (props) => {
                                 <Link to='/share_notes'>Share Note </Link>
                             </NavItem>
                             <NavItem eventKey={4} componentClass='span'>
+                                <Link to='/share_notes'>Shared By Me</Link>
+                            </NavItem>
+                            <NavItem eventKey={5} componentClass='span'>
                                 <i className="glyphicon glyphicon-user" onClick={() => logoutHandle(props)}></i>
                             </NavItem>
                         </Aux>}
                 </Nav>
+                </Navbar.Collapse>
             </Navbar>
 
         </Aux>);

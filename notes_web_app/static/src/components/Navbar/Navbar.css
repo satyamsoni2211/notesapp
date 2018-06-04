@@ -3,6 +3,7 @@
     display: inline-block;
     line-height: 20px;
   }
-a {
-    text-decoration: none;
+img {
+    height: 30px;
+    color: grey;
 }
