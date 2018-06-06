@@ -12,8 +12,7 @@ class SharedNotes extends Component {
         notes: null,
         note: null,
         user: null,
-        userflag: false,
-        errmessage: null
+        can_edit: false
     }
     componentDidMount() {
         axios({
@@ -28,19 +27,23 @@ class SharedNotes extends Component {
         })
             .catch(e => console.log(e));
     }
+    refreshState = () => {
+        this.setState({user: null,note: null, can_edit: false});
+    }
     shareNote = (e) => {
         e.preventDefault();
         // this.state.user ? this.setState({ userflag: false }) : this.setState({ userflag: true });
-        if (this.state.user == null){
-            notify('Please Select User !','error');
+        if (this.state.user == null) {
+            notify('Please Select User !', 'error');
         }
-        if (this.state.note == null){
-            notify('Please Select Note !','error');
+        if (this.state.note == null) {
+            notify('Please Select Note !', 'error');
         }
         if (this.state.note && this.state.user) {
             const noteid = this.state.notes[this.state.notes.findIndex(n => n.title == this.state.note)].id;
             console.log(noteid);
             console.log(this.state.user);
+            console.log(`can edit: ${this.state.can_edit}`);
             axios({
                 method: 'POST',
                 url: 'http://127.0.0.1:8000/api/sharenote/',
@@ -49,10 +52,14 @@ class SharedNotes extends Component {
                 },
                 data: {
                     id: noteid,
-                    username: this.state.user
+                    username: this.state.user,
+                    can_edit: this.state.can_edit
                 }
             })
-                .then(r => console.log(r))
+                .then(r => {
+                    console.log(r);
+                    this.refreshState();
+                })
                 .catch(e => {
                     console.log(e);
                     if (e.response.data.details) { notify(e.response.data.details, 'error'); }
@@ -64,10 +71,11 @@ class SharedNotes extends Component {
             this.state.notes.findIndex(n => n.title == this.state.note) : -1;
         return (
             <Aux>
-                <div className='col-sm-6 col-sm-offset-3 border border-dark'>
-                    <div>This is for shared notes</div>
-                    <h4>Select User</h4>
-                    <div id='Popover1'>{this.state.users &&
+                <div className='col-sm-6 offset-3 border border-light bg-light p-4 shadow'>
+                    <div className='text-uppercase text-center border border-left-0 border-right-0 border-top-0'>
+                        This is for shared notes</div>
+                    <h6 className='bg-light text-uppercase text-center pt-1'><small>Select User</small></h6>
+                    {this.state.users &&
                         <Typeahead
                             onChange={(user) => {
                                 this.setState({ user });
@@ -76,9 +84,8 @@ class SharedNotes extends Component {
                             placeholder="Choose a user..."
                             options={this.state.users.map(e => e.username)}
                         />}
-                    </div>
 
-                    <h4>Select Note</h4>
+                    <h6 className='bg-light text-uppercase text-center pt-1'><small>Select Note</small></h6>
                     {this.state.users && <Typeahead
                         onChange={(note) => {
                             this.setState({ note });
@@ -86,20 +93,27 @@ class SharedNotes extends Component {
                         placeholder="Choose a note..."
                         options={this.state.notes.map(e => e.title)}
                     />}
+                    <div className="form-check pt-2">
+                        <input type="checkbox" className="form-check-input" value={this.state.can_edit}
+                            id='can_edit'
+                            checked={this.state.can_edit}
+                            onChange={e => { this.setState({ can_edit: e.target.checked }) }} />
+                        <label className="form-check-label" htmlFor="can_edit">Can Edit ?</label>
+                    </div>
                     <br />
-                    <button className='btn btn-default' onClick={(e) => this.shareNote(e)}>Share Note</button>
+                    <button className='btn btn-outline-info' onClick={(e) => this.shareNote(e)}>Share Note</button>
                 </div>
                 <br />
-                <div className='col-sm-4 col-sm-offset-4 mg-top-20'>
+                <div className='col-sm-4 offset-4'>
                     {
                         noteIndex != -1 &&
-                        <Panel>
-                            <Panel.Heading>{this.state.notes[noteIndex].title}</Panel.Heading>
-                            <Panel.Body>{this.state.notes[noteIndex].text}</Panel.Body>
-                        </Panel>
+                        <div className="card">
+                            <div className="card-header text-center text-uppercase bg-warning">{this.state.notes[noteIndex].title}</div>
+                            <div className="card-body bg-warning">{this.state.notes[noteIndex].text}</div>
+                        </div>
+
                     }
                 </div>
-
             </Aux>
         );
     }

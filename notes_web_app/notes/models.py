@@ -7,7 +7,7 @@ class Notes(models.Model):
     title = models.CharField(max_length=30)
     created = models.DateTimeField(auto_now=True)
     text = models.CharField(max_length=2000)
-    user = models.ForeignKey(User,related_name='notes')
+    user = models.ForeignKey(User,related_name='notes', on_delete=models.CASCADE)
 
     def __str__(self):
         return self.title
@@ -19,8 +19,8 @@ class Notes(models.Model):
         ordering = ['-created']
 
 class SharedNotes(models.Model):
-    note = models.ForeignKey(Notes,related_name='shared_note')
-    user = models.ForeignKey(User,related_name='shared_user')
+    note = models.ForeignKey(Notes,related_name='shared_note', on_delete=models.CASCADE)
+    user = models.ForeignKey(User,related_name='shared_user', on_delete=models.CASCADE)
     shared_by = models.CharField(max_length=30,null=True)
     shared_on = models.DateTimeField(auto_now=True)
     can_edit = models.BooleanField(default=False)

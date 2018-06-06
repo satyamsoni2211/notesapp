@@ -1,55 +1,63 @@
-import { Navbar, Nav, NavItem } from 'react-bootstrap';
-import React from 'react';
+import React, { Component } from 'react';
 import Logo from '../../Assets/Logo/note.png';
 import Aux from '../../hoc/Aux';
 import { Link, Redirect, withRouter } from 'react-router-dom';
-import './Navbar.css';
+import {
+    Collapse,
+    Navbar,
+    NavbarToggler,
+    NavbarBrand,
+    Nav,
+    NavItem,
+    NavLink
+} from 'reactstrap';
 
-const style = {
-    backgroundColor: 'inherit',
-    borderBottom: 'none',
-    marginBottom: '0'
-};
-const logoutHandle = (p) => {
-    window.sessionStorage.removeItem('token');
-    p.history.push('/login');
-}
-const navbar = (props) => {
-    return (
-        <Aux>
-            <Navbar collapseOnSelect>
-                <Navbar.Header>
-                    <Navbar.Brand>
-                        <Link to='/'><img src={Logo} alt='Brand' /></Link>
-                    </Navbar.Brand>
-                    <Navbar.Toggle/>
-                </Navbar.Header>
-                
-                <Navbar.Collapse>
-                <Nav pullRight>
+
+
+class NotesNav extends Component {
+    state = {
+        isOpen: false
+    }
+    toggle = () => {
+        this.setState({
+            isOpen: !this.state.isOpen
+        })
+    }
+    logoutHandle = () => {
+        window.sessionStorage.removeItem('token');
+        this.props.history.push('/login');
+    }
+    render() {
+        return (
+            <Aux>
+                <Navbar color='dark' dark expand="md" className='mb-5'>
+                    <Link to='/' className='nav-link navbar-brand text-uppercase text-light'>notesapp</Link>
                     {window.sessionStorage.getItem('token') &&
                         <Aux>
-                            <NavItem eventKey={1} componentClass='span'>
-                                <Link to='/view_notes'>View Notes</Link>
-                            </NavItem>
-                            <NavItem eventKey={2} componentClass='span'>
-                                <Link to='/create_notes'>Create Note </Link>
-                            </NavItem>
-                            <NavItem eventKey={3} componentClass='span'>
-                                <Link to='/share_notes'>Share Note </Link>
-                            </NavItem>
-                            <NavItem eventKey={4} componentClass='span'>
-                                <Link to='/share_notes'>Shared By Me</Link>
-                            </NavItem>
-                            <NavItem eventKey={5} componentClass='span'>
-                                <i className="glyphicon glyphicon-user" onClick={() => logoutHandle(props)}></i>
-                            </NavItem>
+                            <NavbarToggler onClick={this.toggle} />
+                            <Collapse isOpen={this.state.isOpen} navbar>
+                                <Nav className="ml-auto" navbar>
+                                    <NavItem>
+                                        <Link to='/view_notes' className='nav-link'>View Notes</Link>
+                                    </NavItem>
+                                    <NavItem>
+                                        <Link to='/create_notes' className='nav-link'>Create Note </Link>
+                                    </NavItem>
+                                    <NavItem>
+                                        <Link to='/share_notes' className='nav-link'>Share Note</Link>
+                                    </NavItem>
+                                    <NavItem>
+                                        <Link to='/shared_with_me' className='nav-link'>Share With Me</Link>
+                                    </NavItem>
+                                    <NavItem>
+                                        <i className="fas fa-user-times nav-link" onClick={() => this.logoutHandle()}></i>
+                                    </NavItem>
+                                </Nav>
+                            </Collapse>
                         </Aux>}
-                </Nav>
-                </Navbar.Collapse>
-            </Navbar>
-
-        </Aux>);
+                </Navbar>
+            </Aux>);
+    }
 };
 
-export default withRouter(navbar);
+export default withRouter(NotesNav);

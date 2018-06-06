@@ -7,3 +7,6 @@ img {
     height: 30px;
     color: grey;
 }
+.navbar{
+    background: inherit;
+}

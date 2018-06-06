@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import './Note.css';
 import axios from 'axios';
-import {notify} from '../Utils/Util';
+import { notify } from '../Utils/Util';
 
 
 class Note extends Component {
@@ -21,11 +21,11 @@ class Note extends Component {
             .then((response) => {
                 // console.log(response)
                 console.log(response);
-                notify('Note Updated','info');
+                notify('Note Updated', 'info');
 
             }).catch(error => {
                 console.log(error);
-                notify('Cannot update note','error');
+                notify('Cannot update note', 'error');
             });
     }
 
@@ -40,26 +40,33 @@ class Note extends Component {
                 // console.log(response)
                 console.log(response);
                 console.log(this.props)
-                notify('Note deleted','info');
+                notify('Note deleted', 'info');
                 this.props.deleteHandler(id);
             }).catch(error => {
                 console.log(error);
-                notify('Cannot Delete the Note','error');
+                notify('Cannot Delete the Note', 'error');
             });
 
     }
     render() {
+        console.log(this.props);
         return (
-            <div className="note-wrap note-white col-md-3">
-                <h2>{this.props.title}</h2>
+            <div className="note-wrap note-white col-sm-3 rounded">
+                <h5>{this.props.title}</h5>
                 <hr />
-                <textarea name="text" cols="15" rows="5"
+                <textarea className="form-control" rows="5"
                     value={this.state.text}
                     onChange={(e) => { this.setState({ text: e.target.value }); }}>
                 </textarea>
-                <h5 className="help-block" id='usertag'>Created at: {this.props.created}</h5>
-                <i className="fas fa-edit" onClick={() => { this.updateNote(this.props.id) }}></i>
-                <i className="fas fa-trash-alt" onClick={() => this.deleteNote(this.props.id)}></i>
+                <h6>Created at: <span className='badge badge-pill badge-info'><small>{this.props.created}</small></span></h6>
+                
+                { ( this.props.can_edit == true || this.props.can_edit == undefined) && <div className="btn-group">
+                    <button type="button" className="btn btn-outline-secondary" onClick={() => { this.updateNote(this.props.id) }}>
+                        <i className="fas fa-edit"></i></button>
+                    <button type="button" className="btn btn-outline-secondary" onClick={() => this.deleteNote(this.props.id)}>
+                        <i className="fas fa-trash-alt" ></i>
+                    </button>
+                </div>}
             </div>);
     }
 }

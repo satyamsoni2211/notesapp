@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import { notify } from '../Utils/Util';
-import {Form, FormGroup, Label, Input, Button} from 'reactstrap';
+import { Form, FormGroup, Label, Input, Button, Col } from 'reactstrap';
 
 class CreateNote extends Component {
     state = {
@@ -35,32 +35,33 @@ class CreateNote extends Component {
     }
     render() {
         return (
-            <div className='col-sm-8 col-sm-offset-2'>
+            <div className='col-sm-6 offset-3 border rounded p-4 shadow border-light bg-light'>
+                <h4 className='text-capitalize text-center text-info'>Create Note</h4>
                 <Form>
-                    <FormGroup>
-                        <Label for="title">Title</Label>
-                        <Input type="text" name="email" id="title" placeholder="enter title" 
-                        onChange={e => this.setState({ title: e.target.value })} />
+                    <FormGroup row>
+                        <Label for="title" sm={2}>Title</Label>
+                        <Col sm={10}>
+                            <Input type="text" name="title" id="title" placeholder="Enter Title"
+                                onChange={e => this.setState({ title: e.target.value })} />
+                        </Col>
                     </FormGroup>
-                    <FormGroup>
-                        <Label for="text">Text</Label>
-                        <Input type="textarea" name="text" id="text" placeholder='Enter Text'
-                        onChange={e => this.setState({ text: e.target.value })} />
+                    <FormGroup row>
+                        <Label for="text" sm={2}>Text</Label>
+                        <Col sm={10}>
+                            <Input type="textarea" name="text" id="text"
+                            placeholder='Enter Text'
+                                onChange={e => this.setState({ text: e.target.value })} />
+                        </Col>
                     </FormGroup>
-                    <Button color="default" onClick={(e) => this.createNote(e)}>Create</Button>
+                    <FormGroup check row>
+                        <Col sm={{ size: 10, offset: 2 }}>
+                            <Button onClick={(e) => this.createNote(e)} className='btn-outline-dark'>Submit</Button>
+                        </Col>
+                    </FormGroup>
                 </Form>
             </div>
         );
     }
 }
 
-// <form className='box'>
-// <label>Title: </label><input type="text" name='title' placeholder='Type your title here '
-//     onChange={e => this.setState({ title: e.target.value })} />
-// <hr />
-// <textarea name="text" id="" cols="30" rows="10" placeholder='Type your Note here'
-//     onChange={e => this.setState({ text: e.target.value })}></textarea>
-// <br />
-// <button className='btn btn-primary' onClick={(e) => this.createNote(e)}>Create</button>
-// </form>
 export default CreateNote;

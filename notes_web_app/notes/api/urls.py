@@ -9,4 +9,5 @@ urlpatterns = [
     url(r'^create/$',views.CreateNote,name='create-note'),
     url(r'^delete/(?P<pk>\d+)/$',views.DeleteNote,name='delete-note'),
     url(r'^sharenote/$',views.ShareNotes,name='share-note'),
+    url(r'^shared_with_me/$',views.Shared_with_me,name='shared-with-me'),
 ]

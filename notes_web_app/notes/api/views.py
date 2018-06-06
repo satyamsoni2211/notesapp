@@ -1,6 +1,6 @@
 from rest_framework import generics
 from rest_framework.decorators import api_view, renderer_classes
-from .serializers import NotesSerializer, UserSerializer
+from .serializers import NotesSerializer, UserSerializer, UserNoteSerializer
 from notes.models import Notes, SharedNotes
 from django.contrib.auth import get_user_model
 from rest_framework import mixins
@@ -114,11 +114,23 @@ def ShareNotes(request):
     if request.method == 'POST':
         noteid = request.data.get('id')
         username = request.data.get('username')[0]
-        note = SharedNotes.objects.get(note__id=noteid,user__username=username)
-        if note:
+        can_edit = request.data.get('can_edit')
+        note = SharedNotes.objects.filter(note__id=noteid,user__username=username)
+        if note.exists():
             return Response({'details': 'Note already Shared'},status=status.HTTP_409_CONFLICT)
         print(noteid,username)
         shareNote = SharedNotes.objects.create(note=Notes.objects.get(id=noteid),
-                                               user=User.objects.get(username=username), shared_by=request.user.username)
+                                               user=User.objects.get(username=username), 
+                                               shared_by=request.user.username,
+                                               can_edit=can_edit)
         shareNote.save()
         return Response({'details': 'Note Shared Successfully'})
+
+@api_view(['GET'])
+@renderer_classes((JSONRenderer,))
+def Shared_with_me(request):
+    print(request.user.username)
+    shared_notes = UserNoteSerializer(request.user)
+    print(shared_notes.data)
+    # print(serializer.data)
+    return Response(shared_notes.data)
