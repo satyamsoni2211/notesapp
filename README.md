@@ -1,5 +1,5 @@
 # notesapp
-React + Django
+<strong>React + Django</strong>
 
 This projects uses react front end with django Rest Framework API calls for managing notes
 
